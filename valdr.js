@@ -1,7 +1,7 @@
 /**
- * valdr - v1.1.6 - 2016-09-14
+ * valdr - v1.1.5 - 2015-09-22
  * https://github.com/netceteragroup/valdr
- * Copyright (c) 2016 Netcetera AG
+ * Copyright (c) 2015 Netcetera AG
  * License: MIT
  */
 (function (window, document) {
@@ -87,9 +87,6 @@ angular.module('valdr')
        */
       notEmpty: function (value) {
         if (this.isNaN(value)) {
-          return false;
-        }
-        if (angular.isArray(value) && value.length === 0){
           return false;
         }
         return angular.isDefined(value) && value !== '' && value !== null;
@@ -197,7 +194,7 @@ angular.module('valdr')
 
 angular.module('valdr')
 
-  .factory('valdrSizeValidator', ['valdrUtil', function (valdrUtil) {
+  .factory('valdrSizeValidator', function () {
     return {
       name: 'size',
 
@@ -213,23 +210,18 @@ angular.module('valdr')
           maxLength = constraint.max;
 
         value = value || '';
-
-        if (valdrUtil.isEmpty(value)) {
-          return true;
-        }
-
         return value.length >= minLength &&
           (maxLength === undefined || value.length <= maxLength);
       }
     };
-  }]);
+  });
 
 angular.module('valdr')
 
   .factory('valdrEmailValidator', ['valdrUtil', function (valdrUtil) {
 
     // the e-mail pattern used in angular.js
-    var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
+    var EMAIL_REGEXP = /^([a-zA-Z0-9]|[a-zA-Z0-9]{2}|[a-zA-Z0-9][a-zA-Z0-9._+]+[a-zA-Z0-9])@((([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\.)+[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z])|(\[\d{1,3}(\.\d{1,3}){3}\]))$/i;
 
     return {
       name: 'email',
@@ -455,7 +447,7 @@ angular.module('valdr')
         var minLength = constraint.number;
 
         if (valdrUtil.isEmpty(value)) {
-          return true;
+          return minLength === 0;
         }
 
         if (typeof value === 'string') {
@@ -796,15 +788,17 @@ var valdrFormGroupDirectiveDefinition =
         };
 
         this.addMessageElement = function (ngModelController, messageElement) {
-          $element.append(messageElement);
+          var customEle = $element.find('.dm-icon-checkmark-circled');
+          if(customEle.length > 0) {
+            customEle.after(messageElement);
+          } else {
+            $element.append(messageElement);
+          }
           messageElements[ngModelController.$name] = messageElement;
         };
 
         this.removeMessageElement = function (ngModelController) {
-          if (messageElements[ngModelController.$name]) {
-            messageElements[ngModelController.$name].remove();
-            delete messageElements[ngModelController.$name];
-          }
+          messageElements[ngModelController.$name].remove();
         };
 
       }]
@@ -813,7 +807,6 @@ var valdrFormGroupDirectiveDefinition =
 
 angular.module('valdr')
   .directive('valdrFormGroup', valdrFormGroupDirectiveDefinition);
-
 angular.module('valdr')
 
 /**

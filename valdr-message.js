@@ -244,12 +244,8 @@ angular.module('valdr')
           }
         }, true);
 
-        var unregisterTranslateChangeHandler = $rootScope.$on('$translateChangeSuccess', function () {
+        $rootScope.$on('$translateChangeSuccess', function () {
           updateTranslations();
-        });
-
-        scope.$on('$destroy', function () {
-          unregisterTranslateChangeHandler();
         });
       }
     };
